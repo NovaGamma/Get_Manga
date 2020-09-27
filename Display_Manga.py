@@ -3,6 +3,24 @@ import pygame
 
 pygame.init()
 
+def save():
+    with open("Data.txt",'w') as data:
+        data.write("Chapter : " + str(chapter_number) + '\n')
+        data.write("Scroll : " + str(scroll_y) + '\n')
+        data.write("Name : " + name_raw + '\n')
+
+def load():
+    global chapter_number,scroll_y,name_raw
+    if os.path.exists("Data.txt"):
+        with open("Data.txt",'r') as data:
+            for line in data:
+                if "Chapter" in line:
+                    chapter_number = int(line.split(':')[-1].rstrip('\n').strip())
+                elif "Scroll" in line:
+                    scroll_y = int(line.split(':')[-1].rstrip('\n').strip())
+                elif "Name" in line:
+                    name_raw = line.split(':')[-1].rstrip('\n').strip()
+
 def smaller(e1,e2):
     if e1[2] > e2[2]: #mean that the chapter number of e2 is smaller
         return e2
@@ -16,11 +34,13 @@ def smaller(e1,e2):
 
 def load_chapter(chapter_number,path = ''):#load in memory a whole chapter
     hold = []
-    for page in os.listdir("Above All Gods/"):
+    for page in os.listdir(name + "/"):
         if 'Chapter' in page:
             temp = page.split(" ")
             if '-' in temp[1]:
                 number = int(temp[1].split('-')[0])
+            elif '.' in temp[1]:
+                number = int(temp[1].split('.')[0])
             else:
                 number = int(temp[1])
             if number == chapter_number:
@@ -50,11 +70,13 @@ screeny = 980
 
 screen=pygame.display.set_mode((screenx,screeny),pygame.RESIZABLE)
 path_origin = "Download/"
-name = path_origin + "The Great Ruler"
+name_raw = "Tales Of Demons And Gods"
 y=10
 scroll_y = 0
 scalling = 5
-chapter_number = 1
+chapter_number = 81
+load()
+name = path_origin + name_raw
 chapter = load_chapter(chapter_number,name+'/')
 pygame.display.set_caption(name+" Chapter "+str(chapter_number))
 while True:
@@ -64,6 +86,7 @@ while True:
     keys=pygame.key.get_pressed()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
+            save()
             pygame.quit()
             quit()
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_DOWN:
