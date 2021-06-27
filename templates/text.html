@@ -1,0 +1,64 @@
+<html>
+<head>
+</head>
+  <style>
+    .reading-content{
+      padding-left:30%;
+      padding-right:25%;
+    }
+    .page-break{
+      position: center;
+    }
+    .test{
+      position:auto;
+    }
+  </style>
+<body onload="loadChapter({{number}})">
+<div class="reading-content" id="reading">
+</div>
+<script>
+  var ChapNumber = 2
+  document.addEventListener('keydown',handleKey);
+
+  function handleKey(key){
+    let code = key.keyCode;
+    if(code == 37){
+      {% if number > 0 %}
+      window.location.href = "http://127.0.0.1:5000/chapter/{{number-1}}";
+      {% endif %}
+    }
+    else if(code == 39){
+      window.location.href = "http://127.0.0.1:5000/chapter/{{number+1}}";
+    }
+  }
+
+  async function getChapter(number){
+    let url = "http://127.0.0.1:5000/chapterlen/"+number;
+    let response = await fetch(url);
+    let data = await response.json();
+    return data;
+  }
+
+  async function loadChapter(number){
+    let nPages = await getChapter(number);
+    let reading = document.getElementById("reading")
+    //cleaning reading
+    for(let i=0;i<reading.childElementCount;i++){
+      reading.removeChild(reading.children[i]);
+    }
+    //adding the new stuf
+    for(let i=1;i<=nPages;i++){
+      //let src = "static/Tower Of Gods/Chapter "+number+" page "+i+".png";
+      let src = number+"/page/"+i;
+      let div = document.createElement("div");
+      div.className = "page-break";
+      let img = document.createElement("img");
+      img.setAttribute('src', src);
+      div.appendChild(img);
+      reading.appendChild(div);
+    }
+    console.log("Loaded chapter "+number);
+  }
+</script>
+</body>
+</html>

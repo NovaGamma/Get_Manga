@@ -34,7 +34,7 @@ def smaller(e1,e2):
 
 def load_chapter(chapter_number,path = ''):#load in memory a whole chapter
     hold = []
-    for page in os.listdir(name + "/"):
+    for page in os.listdir(path):
         if 'Chapter' in page:
             temp = page.split(" ")
             if '-' in temp[1]:
@@ -69,16 +69,16 @@ screenx = 1240
 screeny = 980
 
 screen=pygame.display.set_mode((screenx,screeny),pygame.RESIZABLE)
-path_origin = "Download/"
-name_raw = "Tales Of Demons And Gods"
+path_origin = "C:/Users/NovaGamma/Documents/"
+name_raw = "Tower Of Gods"
 y=10
 scroll_y = 0
 scalling = 5
-chapter_number = 81
+chapter_number = 2
 load()
 name = path_origin + name_raw
 chapter = load_chapter(chapter_number,name+'/')
-pygame.display.set_caption(name+" Chapter "+str(chapter_number))
+pygame.display.set_caption(name_raw+" Chapter "+str(chapter_number))
 while True:
     #pygame.VIDEORESIZE event
     for img in chapter:
@@ -95,12 +95,12 @@ while True:
             chapter_number += 1
             scroll_y = 0
             chapter = load_chapter(chapter_number,name+'/')
-            pygame.display.set_caption(name+" Chapter "+str(chapter_number))
+            pygame.display.set_caption(name_raw+" Chapter "+str(chapter_number))
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_LEFT:
             chapter_number -= 1
             scroll_y = 0
             chapter = load_chapter(chapter_number,name+'/')
-            pygame.display.set_caption(name+" Chapter "+str(chapter_number))
+            pygame.display.set_caption(name_raw+" Chapter "+str(chapter_number))
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 4 and keys[pygame.K_LCTRL]:
                 temp = 0
@@ -110,21 +110,21 @@ while True:
                     temp_img = img[2]
                     img[0] = pygame.transform.smoothscale(img[2],(img[0].get_width() + int(round(img[0].get_width()*(scalling/100))),img[0].get_height() + int(round(img[0].get_height()*(scalling/100)))))
                     img[2] = temp_img
-                    screen.fill(color = (255,255,255))
+                    screen.fill(color = (0,0,0))
             elif event.button == 4:
                 scroll_y += 50
             if event.button == 5 and keys[pygame.K_LCTRL]:
                 for img in chapter:
                     img[1] = img[1] - int(round(img[0].get_height()*(scalling/100))/2)
                     img[0] = pygame.transform.smoothscale(img[2],(img[0].get_width() - int(round(img[0].get_width()*(scalling/100))),img[0].get_height() - int(round(img[0].get_height()*(scalling/100)))))
-                    screen.fill(color = (255,255,255))
+                    screen.fill(color = (0,0,0))
             elif event.button == 5:
                 scroll_y -= 50
         elif event.type == pygame.VIDEORESIZE:
             screenx = event.w
             screeny = event.h
             screen = pygame.display.set_mode((screenx,screeny),pygame.RESIZABLE)
-            screen.fill(color = (255,255,255))
+            screen.fill(color = (0,0,0))
     pygame.display.update()
 
 pygame.quit()

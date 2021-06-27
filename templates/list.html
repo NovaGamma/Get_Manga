@@ -1,0 +1,30 @@
+!<!DOCTYPE html>
+<html>
+<head>
+  <title>Manga List</title>
+  <style>
+    .item{
+
+    }
+  </style>
+</head>
+<body onload="get_list()">
+  <div id="list-content">
+  </div>
+</body>
+<script>
+  function addEl(item,index){
+    let content = document.getElementById("list-content");
+    let newEl = document.createElement("div");
+    newEl.className = "item";
+    newEl.innerHTML = item;
+    content.appendChild(newEl);
+  }
+
+  function get_list(){
+    let list_str = fetch("http://127.0.0.1:5000/get_list");
+    let list = list_str.split('|');
+    list.forEach(addEl);
+  }
+</script>
+</html>
