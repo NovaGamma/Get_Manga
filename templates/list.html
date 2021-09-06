@@ -1,4 +1,4 @@
-!<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
   <title>Manga List</title>
@@ -21,8 +21,11 @@
     content.appendChild(newEl);
   }
 
-  function get_list(){
-    let list_str = fetch("http://127.0.0.1:5000/get_list");
+  async function get_list(){
+    let url = "http://127.0.0.1:5000/get_list"
+    let response = await fetch(url);
+    console.log(response);
+    let list_str = await response.json();
     let list = list_str.split('|');
     list.forEach(addEl);
   }

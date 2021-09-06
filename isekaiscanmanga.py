@@ -9,7 +9,7 @@ def get_page(text):
 
 def get_pages(soup):#mangatx
     pages = []
-    temp = soup.find_all('div',class_ = "page-break no-gaps")
+    temp = soup.find_all('div',class_ = "page-break")
     for item in temp:
         page_number = get_page(item.contents[1].attrs['id'])
         url = item.contents[1].attrs["data-src"].strip()
