@@ -27,19 +27,15 @@ def clean(list):
             list.remove('\n')
     return list
 
-path="https://isekaiscanmanga.com/manga/survival-story-of-a-sword-king-in-a-fantasy-world/chapter-1/"
-name = "survival-story-of-a-sword-king-in-a-fantasy-world"
+path="https://mangatx.com/manga/arcane-sniper/chapter-8/"
+name = "arcane-sniper"
 dirName = f"static/{name}"
 if not(os.path.exists(dirName)):
     os.mkdir(dirName)
-
 r = requests.get(path)
 soup = BeautifulSoup(r.text,'html.parser')
-
 result = get_chapter_list(soup)
-result = result[::-1]
 print('Found {} chapters !'.format(len(result)))
-#print('Found {} chapters !\nThe first is chapter number {}'.format(len(result),result[0].attrs['data-redirect'].split('/')[-1]))
 for chapter in result:
     t0 = time.time()
     nBroken = 0
