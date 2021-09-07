@@ -1,6 +1,7 @@
 import flask
-from flask import redirect,url_for,Flask,jsonify,render_template
+from flask import redirect,url_for,Flask,jsonify,render_template,Response
 import os
+import json
 
 app = Flask(__name__)
 
@@ -10,42 +11,43 @@ def manga(name,number):
 
 @app.route('/<string:name>/')
 def reroute(name):
-    if dir in os.listdir('static/'):
-        #print(url_for('manga',name=name,chapter=1))
-        url = f"http://127.0.0.1:5000/{name}/chapter/1"
-        return redirect(url)
-    return 'Error : Manga not found'
+    if name in os.listdir('static/'):
+        first_chapter = os.listdir(f'static/{name}/')[0].split(' ')[1]
+        return redirect(url_for('manga',name=name,number=int(first_chapter)))
+    else:
+        return f'Error : Manga {name} not found'
 
 @app.route('/<string:name>/chapter/<int:number>/page/<int:page_number>')
 def pages(name,number,page_number):
-    for dir in os.listdir('static/'):
-        copy = dir
-        if dir == name:
-            break
-    return flask.send_file(f"static/{copy}/Chapter {number} page {page_number}.png")
+    if name in os.listdir('static/'):
+        return flask.send_file(f"static/{name}/Chapter {number}/page {page_number}.png")
+    else:
+        return f'page {page_number} not found'
 
-@app.route('/chapter/<int:number>')
-def chapter(number):
-    return render_template('text.html',number = number)
+@app.route('/<string:name>/preview')
+def getPreview(name):
+    if name in os.listdir('static/'):
+        first_chapter = os.listdir(f'static/{name}/')[0]
+        first_image = os.listdir(f'static/{name}/{first_chapter}/')[0]
+        return flask.send_file(f'static/{name}/{first_chapter}/{first_image}')
+    else:
+        return f'Error : Manga {name} not found'
+
 
 @app.route("/<string:name>/chapterlen/<int:number>")
 def chapterlen(name,number):
-    for dir in os.listdir('static/'):
-        copy = dir
-        if dir.lower().replace(' ','_') == name:
-            break
-    list = [page for page in os.listdir(f"static/{copy}") if page.startswith(f"Chapter {number} ")]
-    return str(len(list))
+    if name in os.listdir('static/'):
+        if f'Chapter {number}' in os.listdir(f'static/{name}/'):
+            return str(len(os.listdir(f'static/{name}/Chapter {number}')))
+        else:
+            return f"Chapter {number} not found"
+    else:
+        return f"Manga {name} not found"
 
 @app.route('/get_list')
 def list():
     list_dir = os.listdir('static/')
-    manga_list = []
-    for dir in list_dir:
-        maxChapter = max([int(n.split(' ')[1]) for n in os.listdir('static/'+dir+'/')])
-        manga_list.append(f"{dir}:{maxChapter}")
-    response = "|".join(manga_list)
-    return response
+    return json.dumps(list_dir)
 
 @app.route('/list')
 def display_list():
@@ -54,7 +56,6 @@ def display_list():
 @app.route('/')
 def main():
     return redirect(url_for('display_list'))
-    return render_template('test.html')
 
 if __name__ == '__main__':
     # Threaded option to enable multiple instances for multiple user access support

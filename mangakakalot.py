@@ -53,18 +53,20 @@ for chapter in result:
     chapter_request = requests.get(url)
     chapter_soup = BeautifulSoup(chapter_request.text,'html.parser')
     pages = get_pages(chapter_soup)
+    if not os.path.exists(f"{dirName}/Chapter {chapter_number}/"):
+        os.mkdir(f"{dirName}/Chapter {chapter_number}/")
     for page in pages:
         page_url = page[1]
         print(page_url)
         input()
         img_type = '.'+page_url.split('.')[-1]
-        if not os.path.exists(dirName+"/Chapter "+str(chapter_number)+' page '+page[0]+img_type):
+        if not os.path.exists(dirName+"/Chapter "+str(chapter_number)+'/page '+page[0]+img_type):
             image = requests.get(page_url,headers ={"referer":"https://mangakakalot.com/"})
             if image.status_code==404:
                 nBroken += 1
                 print(f"error 404 {page_url}\n{image}")
                 continue
-            with open(dirName+"/Chapter "+str(chapter_number)+' page '+page[0]+img_type,'wb') as f:
+            with open(dirName+"/Chapter "+str(chapter_number)+'/page '+page[0]+img_type,'wb') as f:
                 f.write(image.content)
     t1 = time.time()
     sys.stdout.write(f"{t1-t0} s\n")

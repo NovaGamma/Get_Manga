@@ -9,25 +9,44 @@
   </style>
 </head>
 <body onload="get_list()">
+  <h1>List of downloaded mangas</h1>
   <div id="list-content">
   </div>
 </body>
 <script>
-  function addEl(item,index){
+  function addEl(item){
     let content = document.getElementById("list-content");
+
     let newEl = document.createElement("div");
     newEl.className = "item";
-    newEl.innerHTML = item;
+
+    let link = document.createElement("a");
+    link.href = "http://127.0.0.1:5000/"+item+"/";
+
+    let title = document.createElement("h3");
+    let title_link = document.createElement("a");
+    title_link.href = "http://127.0.0.1:5000/"+item+"/";
+    title_link.innerHTML = item;
+    title.appendChild(title_link);
+
+    let preview = document.createElement("img");
+    preview.width = "220";
+    preview.height = "300";
+    preview.src = "http://127.0.0.1:5000/"+item+"/preview";
+    link.appendChild(preview);
+
+    newEl.appendChild(link);
+    newEl.appendChild(title);
     content.appendChild(newEl);
   }
 
   async function get_list(){
     let url = "http://127.0.0.1:5000/get_list"
     let response = await fetch(url);
-    console.log(response);
     let list_str = await response.json();
-    let list = list_str.split('|');
-    list.forEach(addEl);
+    for (i in list_str){
+      addEl(list_str[i]);
+    }
   }
 </script>
 </html>
