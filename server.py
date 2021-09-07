@@ -8,12 +8,13 @@ app = Flask(__name__)
 def manga(name,number):
     return render_template('manga.html',name=name,number=number)
 
-@app.route('/<string:name>')
+@app.route('/<string:name>/')
 def reroute(name):
     if dir in os.listdir('static/'):
         #print(url_for('manga',name=name,chapter=1))
         url = f"http://127.0.0.1:5000/{name}/chapter/1"
         return redirect(url)
+    return 'Error : Manga not found'
 
 @app.route('/<string:name>/chapter/<int:number>/page/<int:page_number>')
 def pages(name,number,page_number):
