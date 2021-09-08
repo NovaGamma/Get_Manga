@@ -1,5 +1,4 @@
-import flask
-from flask import redirect,url_for,Flask,jsonify,render_template,Response
+from flask import redirect,url_for,Flask,render_template, send_file
 import os
 import json
 
@@ -20,7 +19,7 @@ def reroute(name):
 @app.route('/<string:name>/chapter/<int:number>/page/<int:page_number>')
 def pages(name,number,page_number):
     if name in os.listdir('static/'):
-        return flask.send_file(f"static/{name}/Chapter {number}/page {page_number}.png")
+        return send_file(f"static/{name}/Chapter {number}/page {page_number}.png")
     else:
         return f'page {page_number} not found'
 
@@ -29,7 +28,7 @@ def getPreview(name):
     if name in os.listdir('static/'):
         first_chapter = os.listdir(f'static/{name}/')[0]
         first_image = os.listdir(f'static/{name}/{first_chapter}/')[0]
-        return flask.send_file(f'static/{name}/{first_chapter}/{first_image}')
+        return send_file(f'static/{name}/{first_chapter}/{first_image}')
     else:
         return f'Error : Manga {name} not found'
 

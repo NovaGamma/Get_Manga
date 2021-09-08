@@ -27,7 +27,7 @@ def clean(list):
             list.remove('\n')
     return list
 
-path="https://isekaiscanmanga.com/manga/survival-story-of-a-sword-king-in-a-fantasy-world/chapter-1/"
+path = sys.argv[2]
 name = "survival-story-of-a-sword-king-in-a-fantasy-world"
 dirName = f"static/{name}"
 if not(os.path.exists(dirName)):

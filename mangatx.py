@@ -27,7 +27,7 @@ def clean(list):
             list.remove('\n')
     return list
 
-path="https://mangatx.com/manga/arcane-sniper/chapter-8/"
+path = sys.argv[2]
 name = "arcane-sniper"
 dirName = f"static/{name}"
 if not(os.path.exists(dirName)):

@@ -32,7 +32,7 @@ def clean(list):
             list.remove('\n')
     return list
 
-path = "https://mangakakalot.com/chapter/tsuki_ga_michibiku_isekai_douchuu/chapter_1"
+path = sys.argv[2]
 base_url = '_'.join(path.split('_')[:-1])
 name = "Tsuki"
 dirName = f"static/{name}"
