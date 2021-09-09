@@ -24,9 +24,8 @@ def clean(list):
             list.remove('\n')
     return list
 
-def main(path=''):
-    if path == '':
-        path = "https://ww.mangakakalot.tv/chapter/manga-kd987560/chapter-3"
+def main():
+    path = sys.argv[2]
     url_base = '-'.join(path.split('-')[:2])
     r = requests.get(path)
     soup = BeautifulSoup(r.text,'html.parser')

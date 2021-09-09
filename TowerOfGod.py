@@ -1,5 +1,6 @@
 import requests
 import os
+import sys
 from bs4 import BeautifulSoup
 
 def get_pages(soup):#mangatx
@@ -12,7 +13,7 @@ def get_pages(soup):#mangatx
     return pages
 
 
-path = "https://thetowerofgod.com/manga/tower-of-god-chapter-2/"
+path = sys.argv[2]
 dirName = "C:/Users/NovaGamma/Documents/Tower Of Gods"
 if not(os.path.exists(dirName)):
     os.mkdir(dirName)
