@@ -27,8 +27,8 @@ def clean(list):
             list.remove('\n')
     return list
 
-path="https://mangatx.com/manga/arcane-sniper/chapter-8/"
-name = "arcane-sniper"
+path="https://mangatx.com/manga/im-not-the-overlord/chapter-2-1/"
+name = "im-not-the-overlord"
 dirName = f"static/{name}"
 if not(os.path.exists(dirName)):
     os.mkdir(dirName)
@@ -52,9 +52,14 @@ for chapter in result:
         if not os.path.exists(dirName+"/Chapter "+str(chapter_number)+'/page '+str(int(page[0])+1)+".png"):
             image = requests.get(page_url)
             if image.status_code==404:
-                nBroken += 1
-                print(f"error 404 {page_url}\n{image}")
-                continue
+                retry = 0
+                while image.status_code==404 and retry<20:
+                    time.sleep(1)
+                    image = requests.get(page_url)
+                    retry += 1
+                if retry == 20:
+                    print(f"error 404 {page_url}\n{image}")
+                    continue
             with open(dirName+"/Chapter "+str(chapter_number)+'/page '+str(int(page[0])+1)+".png",'wb') as f:
                 f.write(image.content)
     t1 = time.time()
