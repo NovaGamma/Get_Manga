@@ -37,14 +37,19 @@ r = requests.get(path)
 soup = BeautifulSoup(r.text,'html.parser')
 
 result = get_chapter_list(soup)
+
 result = result[::-1]
+
 print('Found {} chapters !'.format(len(result)))
 #print('Found {} chapters !\nThe first is chapter number {}'.format(len(result),result[0].attrs['data-redirect'].split('/')[-1]))
 for chapter in result:
     t0 = time.time()
     nBroken = 0
+
     url = chapter.attrs['data-redirect']
+
     chapter_number = url.split('/')[-2].lstrip('chapter-')
+
     print(chapter_number)
     chapter_request = requests.get(url)
     chapter_soup = BeautifulSoup(chapter_request.text,'html.parser')
@@ -54,7 +59,9 @@ for chapter in result:
     for page in pages:
         page_url = page[1]
         if not os.path.exists(dirName+"/Chapter "+str(chapter_number)+'/page '+str(int(page[0])+1)+".png"):
+
             image = requests.get(page_url)
+            
             if image.status_code==404:
                 nBroken += 1
                 print(f"error 404 {page_url}\n{image}")
