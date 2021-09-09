@@ -27,8 +27,9 @@ def clean(list):
             list.remove('\n')
     return list
 
-path = sys.argv[2]
-name = "arcane-sniper"
+#path = sys.argv[2]
+path = "https://mangatx.com/manga/im-not-the-overlord/chapter-9/"
+name = path.split('/')[4]
 dirName = f"static/{name}"
 if not(os.path.exists(dirName)):
     os.mkdir(dirName)

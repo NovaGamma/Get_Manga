@@ -40,7 +40,7 @@
       right:50;
     }
   </style>
-<body onload="loadChapter({{number}})">
+<body onload="loadChapter('{{current_chapter}}')">
   <div class="reading-content" id="reading">
   </div>
   <div class='button-nav'>
@@ -48,21 +48,20 @@
 </div>
 </body>
 <script>
-  var ChapNumber = 2
   document.addEventListener('keydown',handleKey);
 
   function nextChapter(){
-    window.location.href = "http://127.0.0.1:5000/{{name}}/chapter/{{number+1}}";
+    window.location.href = "http://127.0.0.1:5000/{{name}}/chapter/{{next_chapter}}";
   }
 
   function previousChapter(){
-    window.location.href = "http://127.0.0.1:5000/{{name}}/chapter/{{number-1}}";
+    window.location.href = "http://127.0.0.1:5000/{{name}}/chapter/{{previous_chapter}}";
   }
 
   function handleKey(key){
     let code = key.keyCode;
     if(code == 37){
-      {% if number > 0 %}
+      {% if current_chapter != previous_chapter %}
         previousChapter();
       {% endif %}
     }
