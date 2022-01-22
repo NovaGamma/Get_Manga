@@ -32,10 +32,10 @@ def clean(list):
             list.remove('\n')
     return list
 
-path = sys.argv[2]
+path = sys.argv[1]
+name = path.split('/')[4]
 base_url = '_'.join(path.split('_')[:-1])
-name = "Tsuki"
-dirName = f"static/{name}"
+dirName = f"static/manga/{name}"
 if not(os.path.exists(dirName)):
     os.mkdir(dirName)
 
@@ -58,7 +58,6 @@ for chapter in result:
     for page in pages:
         page_url = page[1]
         print(page_url)
-        input()
         img_type = '.'+page_url.split('.')[-1]
         if not os.path.exists(dirName+"/Chapter "+str(chapter_number)+'/page '+page[0]+img_type):
             image = requests.get(page_url,headers ={"referer":"https://mangakakalot.com/"})

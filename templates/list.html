@@ -4,9 +4,13 @@
   <title>Manga List</title>
   <meta charset="utf-8"/>
 </head>
-<body onload="get_list()">
+<body>
   <h1>List of downloaded mangas</h1>
+  <div class="content">
+  <div class="history">
+  </div>
   <div id="list-content">
+  </div>
   </div>
 </body>
 <script>
@@ -17,18 +21,18 @@
     newEl.className = "item";
 
     let link = document.createElement("a");
-    link.href = "http://127.0.0.1:5000/"+item+"/";
+    link.href = "http://{{ip}}:5000/"+item+"/";
 
     let title = document.createElement("h3");
     let title_link = document.createElement("a");
-    title_link.href = "http://127.0.0.1:5000/"+item+"/";
+    title_link.href = "http://{{ip}}:5000/"+item+"/";
     title_link.innerHTML = item;
     title.appendChild(title_link);
 
     let preview = document.createElement("img");
     preview.width = "220";
     preview.height = "300";
-    preview.src = "http://127.0.0.1:5000/"+item+"/preview";
+    preview.src = "http://{{ip}}:5000/"+item+"/preview";
     link.appendChild(preview);
 
     newEl.appendChild(link);
@@ -36,13 +40,25 @@
     content.appendChild(newEl);
   }
 
-  async function get_list(){
-    let url = "http://127.0.0.1:5000/get_list"
+  async function getHistory(){
+    let response = await fetch("http://{{ip}}:5000/history");
+    let history = await response.json();
+    console.log(history);
+    let div = document.getElementsByClassName("history")[0];
+    inner = document.createElement('p');
+    inner.innerHTML = history.toString();
+    div.appendChild(inner);
+  }
+
+  async function getList(){
+    let url = "http://{{ip}}:5000/get_list"
     let response = await fetch(url);
     let list_str = await response.json();
     for (i in list_str){
       addEl(list_str[i]);
     }
   }
+  getList();
+  getHistory();
 </script>
 </html>

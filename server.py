@@ -1,6 +1,8 @@
-from flask import redirect,url_for,Flask,render_template, send_file
-import os
-import json
+from flask import redirect,url_for,Flask,render_template, send_file, jsonify, request
+from flask_cors import CORS, cross_origin
+import os, json
+from requestHandler import handler
+from historyHandler import get_history, add_to_history
 
 def get_list_chapter(path):
     list_chapters = [chapter.lstrip('Chapter ') for chapter in os.listdir(f"static/manga/{path}/")]
@@ -11,6 +13,7 @@ def get_list_chapter(path):
     return list_chapter_sorted
 
 app = Flask(__name__)
+cors = CORS(app)
 
 @app.route('/<string:name>/chapter/<string:number>')
 def manga(name,number):
@@ -27,7 +30,8 @@ def manga(name,number):
         next_chapter = number
     else:
         next_chapter = list_chapters[index+1].replace('.','-')
-    return render_template('manga.html',name=name,previous_chapter=previous_chapter,current_chapter=number,next_chapter=next_chapter)
+    add_to_history(name,number)
+    return render_template('manga.html',ip=ip,name=name,previous_chapter=previous_chapter,current_chapter=number,next_chapter=next_chapter)
 
 @app.route('/<string:name>/')
 def reroute(name):
@@ -37,10 +41,22 @@ def reroute(name):
     else:
         return f'Error : Manga {name} not found'
 
+@app.route('/<string:name>/chapterlist/')
+def chapterlist(name):
+    if name in os.listdir('static/manga/'):
+        chapters = get_list_chapter(name)
+        return jsonify(chapters)
+
+@app.route('/history')
+def history():
+    return jsonify(get_history())
+
 @app.route('/<string:name>/chapter/<string:number>/page/<int:page_number>')
 def pages(name,number,page_number):
-    if name in os.listdir('static/manga/'):
-        return send_file(f"static/manga/{name}/Chapter {number}/page {page_number}.png")
+    if name in os.listdir('static/manga/') and f"Chapter {number}" in os.listdir(f'static/manga/{name}/'):
+        file_format = os.listdir(f"static/manga/{name}/Chapter {number}/")[int(page_number)-1].split('.')[-1]
+        print(f"static/manga/{name}/Chapter {number}/page {page_number}.{file_format}")
+        return send_file(f"static/manga/{name}/Chapter {number}/page {page_number}.{file_format}")
     else:
         return f'page {page_number} not found'
 
@@ -53,12 +69,18 @@ def getPreview(name):
     else:
         return f'Error : Manga {name} not found'
 
+@app.route("/request", methods=["POST"])
+def get_request():
+    data = request.get_json()
+    return handler(data)
 
 @app.route("/<string:name>/chapterlen/<string:number>")
 def chapterlen(name,number):
     if name in os.listdir('static/manga/'):
         if f'Chapter {number}' in os.listdir(f'static/manga/{name}/'):
-            return str(len(os.listdir(f'static/manga/{name}/Chapter {number}')))
+            pages = [int(page[5:-4]) for page in os.listdir(f'static/manga/{name}/Chapter {number}')]
+            pages.sort()
+            return jsonify(pages)
         else:
             return f"Chapter {number} not found"
     else:
@@ -67,11 +89,14 @@ def chapterlen(name,number):
 @app.route('/get_list')
 def list():
     list_dir = os.listdir('static/manga/')
-    return json.dumps(list_dir)
+    m_time = [(dir,os.stat('static/manga/'+dir)[8]) for dir in list_dir]
+    result = sorted(m_time, key=lambda dir: dir[1])[::-1]
+    clean = [item[0] for item in result]
+    return json.dumps(clean)
 
 @app.route('/list')
 def display_list():
-    return render_template('list.html')
+    return render_template('list.html',ip=ip)
 
 @app.route('/')
 def main():
@@ -79,4 +104,5 @@ def main():
 
 if __name__ == '__main__':
     # Threaded option to enable multiple instances for multiple user access support
-    app.run(threaded=True, port=5000)
+    ip = '192.168.1.80'
+    app.run(ip,threaded=True, port=5000)

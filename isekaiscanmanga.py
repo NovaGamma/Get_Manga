@@ -27,8 +27,8 @@ def clean(list):
             list.remove('\n')
     return list
 
-path = sys.argv[2]
-name = "survival-story-of-a-sword-king-in-a-fantasy-world"
+path = sys.argv[1]
+name = path.split('/')[4]
 dirName = f"static/{name}"
 if not(os.path.exists(dirName)):
     os.mkdir(dirName)
@@ -61,7 +61,7 @@ for chapter in result:
         if not os.path.exists(dirName+"/Chapter "+str(chapter_number)+'/page '+str(int(page[0])+1)+".png"):
 
             image = requests.get(page_url)
-            
+
             if image.status_code==404:
                 nBroken += 1
                 print(f"error 404 {page_url}\n{image}")

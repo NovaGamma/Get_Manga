@@ -36,7 +36,7 @@ r = requests.get(path)
 soup = BeautifulSoup(r.text,'html.parser')
 result = get_chapter_list(soup)
 print('Found {} chapters !'.format(len(result)))
-for chapter in result:
+for chapter in result[::-1]:
     t0 = time.time()
     nBroken = 0
     url = chapter.attrs['data-redirect']

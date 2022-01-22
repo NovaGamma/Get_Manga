@@ -25,12 +25,10 @@ def clean(list):
     return list
 
 def main():
-    path = sys.argv[2]
+    path = sys.argv[1]
     url_base = '-'.join(path.split('-')[:2])
     r = requests.get(path)
     soup = BeautifulSoup(r.text,'html.parser')
-    print(soup)
-    input()
     name = clean(soup.find('div',class_ = 'info-top-chapter').contents)[0].contents[0].split('\n')[0].lower().replace(' ','_')
     if not(os.path.exists(dirName)):
         dirName = f"static/{name}"

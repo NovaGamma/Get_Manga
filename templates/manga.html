@@ -41,6 +41,11 @@
     }
   </style>
 <body onload="loadChapter('{{current_chapter}}')">
+  <div class="chapter-nav">
+    <button class="button" onclick="home()">Home</button>
+    <select id="select-chapter">
+    </select>
+  </div>
   <div class="reading-content" id="reading">
   </div>
   <div class='button-nav'>
@@ -51,11 +56,15 @@
   document.addEventListener('keydown',handleKey);
 
   function nextChapter(){
-    window.location.href = "http://127.0.0.1:5000/{{name}}/chapter/{{next_chapter}}";
+    window.location.href = "http://{{ip}}:5000/{{name}}/chapter/{{next_chapter}}";
   }
 
   function previousChapter(){
-    window.location.href = "http://127.0.0.1:5000/{{name}}/chapter/{{previous_chapter}}";
+    window.location.href = "http://{{ip}}:5000/{{name}}/chapter/{{previous_chapter}}";
+  }
+
+  function home(){
+    window.location.href = "http://{{ip}}:5000/";
   }
 
   function handleKey(key){
@@ -71,31 +80,50 @@
   }
 
   async function getChapter(number){
-    let url = "http://127.0.0.1:5000/{{name}}/chapterlen/"+number;
+    let url = "http://{{ip}}:5000/{{name}}/chapterlen/"+number;
+    let response = await fetch(url);
+    let data = await response.json();
+    return data;
+  }
+
+  async function getChapters(){
+    let url = "http://{{ip}}:5000/{{name}}/chapterlist/";
     let response = await fetch(url);
     let data = await response.json();
     return data;
   }
 
   async function loadChapter(number){
-    let nPages = await getChapter(number);
+    let pages = await getChapter(number);
     let reading = document.getElementById("reading")
     //cleaning reading
     for(let i=0;i<reading.childElementCount;i++){
       reading.removeChild(reading.children[i]);
     }
     //adding the new stuf
-    for(let i=1;i<=nPages;i++){
-      //let src = "static/Tower Of Gods/Chapter "+number+" page "+i+".png";
-      let src = number+"/page/"+i;
+    pages.forEach(page => {
+      let src = number+"/page/"+page
       let div = document.createElement("div");
       div.className = "page-break";
       let img = document.createElement("img");
       img.setAttribute('src', src);
       div.appendChild(img);
       reading.appendChild(div);
-    }
+    })
     console.log("Loaded chapter "+number);
+
+    let chapters = await getChapters();
+    let nav = document.getElementById("select-chapter");
+    nav.onchange = function(){window.location.href = this.value};
+    chapters.forEach((item) => {
+      let elem = document.createElement("option");
+      if (item == number) elem.selected = true;
+      let url = "http://{{ip}}:5000/{{name}}/chapter/"+item;
+      elem.text = "Chapter " +item;
+      elem.value = url
+      //elem.addEventListener('onselect',()=>{window.location.href = url});
+      nav.appendChild(elem);
+    });
   }
 </script>
 </html>
