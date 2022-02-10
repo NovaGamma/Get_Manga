@@ -1,7 +1,7 @@
 from flask import redirect,url_for,Flask,render_template, send_file, jsonify, request
 from flask_cors import CORS, cross_origin
 import os, json
-from requestHandler import handler
+from requestHandler import handler, checkUrl
 from historyHandler import get_history, add_to_history
 
 
@@ -24,7 +24,6 @@ def manga(name, number):
     if '-' in number:
         number = number.replace('-', '.')
     index = list_chapters.index(number)
-    number = number.replace('.', '-')
     if index == 0:
         previous_chapter = number
     else:
@@ -52,12 +51,17 @@ def chapterlist(name):
 
 @app.route('/history')
 def history():
-    return jsonify(get_history())
+    history_dict = get_history()
+    list = []
+    for key,value in history_dict.items():
+        list.append([key,value])
+    return jsonify(list)
 
 @app.route('/<string:name>/chapter/<string:number>/page/<int:page_number>')
 def pages(name,number,page_number):
     if name in os.listdir('static/manga/') and f"Chapter {number}" in os.listdir(f'static/manga/{name}/'):
-        file_format = os.listdir(f"static/manga/{name}/Chapter {number}/")[int(page_number)-1].split('.')[-1]
+        list_pages = os.listdir(f"static/manga/{name}/Chapter {number}/")
+        file_format = list_pages[int(page_number)-int(list_pages[0][5:-4])].split('.')[-1]
         print(f"static/manga/{name}/Chapter {number}/page {page_number}.{file_format}")
         return send_file(f"static/manga/{name}/Chapter {number}/page {page_number}.{file_format}")
     else:
@@ -79,7 +83,7 @@ def get_request():
     return handler(data)
 
 @app.route("/<string:name>/chapterlen/<string:number>")
-def chapterlen(name, number):
+def list_pages(name, number):
     if name in os.listdir('static/manga/'):
         if f'Chapter {number}' in os.listdir(f'static/manga/{name}/'):
             pages = [int(page[5:-4]) for page in os.listdir(f'static/manga/{name}/Chapter {number}')]
@@ -103,6 +107,11 @@ def list_manga():
 @app.route('/list')
 def display_list():
     return render_template('list.html',ip=ip)
+
+@app.route('/url_check', methods=["POST"])
+def check_url():
+    url = request.get_json()['url']
+    return jsonify(checkUrl(url))
 
 
 @app.route('/')

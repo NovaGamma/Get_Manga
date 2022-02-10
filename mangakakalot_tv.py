@@ -30,8 +30,9 @@ def main():
     r = requests.get(path)
     soup = BeautifulSoup(r.text,'html.parser')
     name = clean(soup.find('div',class_ = 'info-top-chapter').contents)[0].contents[0].split('\n')[0].lower().replace(' ','_')
+    name = ''.join(e for e in name if e.isalnum() or e == '_' or e == ' ')
+    dirName = f"static/manga/{name}"
     if not(os.path.exists(dirName)):
-        dirName = f"static/{name}"
         os.mkdir(dirName)
     result = get_chapter_list(soup)[::-1]
     print('Found {} chapters !\n'.format(len(result)))
@@ -53,7 +54,6 @@ def main():
             if not os.path.exists(dirName+"/Chapter "+str(chapter_number)+'/page '+str(page[0])+".png"):
                 image = requests.get(page_url)
                 if image.status_code==404:
-                    nBroken += 1
                     print(f"error 404 {page_url}\n{image}")
                     continue
                 with open(dirName+"/Chapter "+str(chapter_number)+'/page '+str(page[0])+".png",'wb') as f:

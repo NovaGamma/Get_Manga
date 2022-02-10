@@ -3,13 +3,27 @@
 <head>
   <title>Manga List</title>
   <meta charset="utf-8"/>
+  <style>
+    .container{
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    .card{
+      background-color: grey;
+      border-radius: .25rem;
+      margin: 10px;
+      width: 220px;
+      box-shadow: 4px 4px 4px black;
+    }
+  </style>
 </head>
 <body>
   <h1>List of downloaded mangas</h1>
   <div class="content">
-  <div class="history">
-  </div>
-  <div id="list-content">
+    <div class="history container">
+    </div>
+    <div id="list-content" class="container">
   </div>
   </div>
 </body>
@@ -18,7 +32,7 @@
     let content = document.getElementById("list-content");
 
     let newEl = document.createElement("div");
-    newEl.className = "item";
+    newEl.className = "item card";
 
     let link = document.createElement("a");
     link.href = "http://{{ip}}:5000/"+item+"/";
@@ -26,7 +40,7 @@
     let title = document.createElement("h3");
     let title_link = document.createElement("a");
     title_link.href = "http://{{ip}}:5000/"+item+"/";
-    title_link.innerHTML = item;
+    title_link.innerHTML = item.replace(/_/g,'-');
     title.appendChild(title_link);
 
     let preview = document.createElement("img");
@@ -35,8 +49,8 @@
     preview.src = "http://{{ip}}:5000/"+item+"/preview";
     link.appendChild(preview);
 
-    newEl.appendChild(link);
     newEl.appendChild(title);
+    newEl.appendChild(link);
     content.appendChild(newEl);
   }
 
@@ -45,9 +59,23 @@
     let history = await response.json();
     console.log(history);
     let div = document.getElementsByClassName("history")[0];
-    inner = document.createElement('p');
-    inner.innerHTML = history.toString();
-    div.appendChild(inner);
+    history.forEach((item) => {
+      url = `http://{{ip}}:5000/${item[0]}/chapter/${item[1]}`
+      inner_div = document.createElement('div');
+      inner_div.className = "card";
+
+      inner = document.createElement('a');
+      inner.href = url;
+
+      img = document.createElement('img');
+      img.width = "75";
+      img.height = "75";
+      img.src = `http://{{ip}}:5000/${item[0]}/preview`
+
+      inner.appendChild(img);
+      inner_div.appendChild(inner);
+      div.appendChild(inner_div);
+    });
   }
 
   async function getList(){

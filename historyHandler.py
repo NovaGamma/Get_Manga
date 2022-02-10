@@ -11,7 +11,7 @@ def get_history():
 def add_to_history(name, number):
     history = get_history()
     if name in history.keys():
-        if int(number) > int(history[name]):
+        if float(number) > float(history[name]):
             history[name] = number
     else:
         history[name] = number

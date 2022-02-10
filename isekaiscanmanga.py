@@ -29,7 +29,7 @@ def clean(list):
 
 path = sys.argv[1]
 name = path.split('/')[4]
-dirName = f"static/{name}"
+dirName = f"static/manga/{name}"
 if not(os.path.exists(dirName)):
     os.mkdir(dirName)
 
