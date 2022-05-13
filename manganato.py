@@ -3,6 +3,8 @@ import os
 from bs4 import BeautifulSoup
 import sys
 import time
+from progressBar import Progress
+import re
 
 def get_page(text):
     return text.split('-')[1]
@@ -16,6 +18,8 @@ def get_pages(soup):
         if item.name == 'img':
             url = item.attrs["src"].strip()
             page_number = url.split('/')[-1].rstrip('.jpg')
+            if re.search("-[a-z]", page_number):
+                page_number = "".join(re.split("-[a-z]", page_number))
             pages.append([page_number,url])
     return pages
 
@@ -32,29 +36,33 @@ def clean(list):
             list.remove('\n')
     return list
 
-path = sys.argv[1]
+def filtering(string):
+    if not string.isalnum():
+        if string == " ":
+            return True
+        return False
+    return True
 
+path = sys.argv[1]
+startChapter = int(sys.argv[2])
 r = requests.get(path)
 soup = BeautifulSoup(r.text,'html.parser')
-print(soup)
-div = soup.find_all('div',_class="panel-breadcrumb")
-print(div)
-name = div.find_all('a',_class="a-h")[0]['title'].replace(' ','-')
+div = soup.find_all('div',class_="panel-breadcrumb")[0]
+name = ''.join(filter(filtering, div.find_all('a',class_="a-h")[1]['title'])).replace(' ','-')
+
 dirName = f"static/manga/{name}"
 if not(os.path.exists(dirName)):
     os.mkdir(dirName)
 
 base_url = '-'.join(path.split('-')[:-1])
-print(base_url)
 
 result = get_chapter_list(soup)[::-1]
 print('Found {} chapters !\nThe first {}'.format(len(result),result[0]))
 #print('Found {} chapters !\nThe first is chapter number {}'.format(len(result),result[0].attrs['data-redirect'].split('/')[-1]))
-for chapter in result:
+for chapter in result[startChapter:]:
     t0 = time.time()
     nBroken = 0
     url = chapter
-    print(chapter)
     chapter_number = url.split('-')[-1]
     print(chapter_number)
     chapter_request = requests.get(url)
@@ -62,7 +70,10 @@ for chapter in result:
     pages = get_pages(chapter_soup)
     if not os.path.exists(f"{dirName}/Chapter {chapter_number}/"):
         os.mkdir(f"{dirName}/Chapter {chapter_number}/")
+    p = Progress(len(pages))
+    p.start()
     for page in pages:
+        p.next()
         page_url = page[1]
         img_type = '.'+page_url.split('.')[-1]
         if not os.path.exists(dirName+"/Chapter "+str(chapter_number)+'/page '+page[0]+img_type):

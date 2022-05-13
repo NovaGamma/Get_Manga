@@ -3,7 +3,7 @@ from flask_cors import CORS, cross_origin
 import os, json
 from requestHandler import handler, checkUrl
 from historyHandler import get_history, add_to_history
-
+from difflib import SequenceMatcher
 
 def get_list_chapter(path):
     list_chapters = [chapter.lstrip('Chapter ') for chapter in os.listdir(f"static/manga/{path}/")]
@@ -17,6 +17,8 @@ def get_list_chapter(path):
 app = Flask(__name__)
 cors = CORS(app)
 
+file = open('read.json','r')
+reads = json.load(file)
 
 @app.route('/<string:name>/chapter/<string:number>')
 def manga(name, number):
@@ -38,8 +40,8 @@ def manga(name, number):
 @app.route('/<string:name>/')
 def reroute(name):
     if name in os.listdir('static/manga/'):
-        first_chapter = os.listdir(f'static/manga/{name}/')[0].split(' ')[1]
-        return redirect(url_for('manga', name=name, number=first_chapter))
+        first_chapter = get_list_chapter(name)
+        return redirect(url_for('manga', name=name, number=first_chapter[0]))
     else:
         return f'Error : Manga {name} not found'
 
@@ -93,6 +95,18 @@ def list_pages(name, number):
             return f"Chapter {number} not found"
     else:
         return f"Manga {name} not found"
+
+
+@app.route('/read', methods=["GET","POST"])
+def is_read():
+    name = request.get_json()
+
+    for el in reads:
+        el = el.rstrip('\n')
+        seq = SequenceMatcher(None,el.lower(),name['title'].lower())
+        if seq.ratio() > 0.8:
+            return jsonify(1)
+    return jsonify(0)
 
 
 @app.route('/get_list')

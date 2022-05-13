@@ -20,7 +20,9 @@ def get_pages(soup):
     return pages
 
 def get_chapter_list(soup):
-    s = soup.find_all('ul',class_ = "clstyle")
+    print(soup)
+    s = soup.find_all('ul', class_ = "clstyle")
+    print(s[0])
     result = [item.contents[1].contents[1].contents[1].attrs['href'] for item in s[0].contents if not (item == '\n' or item == ' ')]
     return result
 

@@ -17,6 +17,8 @@ def get_chapter_number(chapter):
 def get_pages(chapter_soup):
     return None
 
+def get_page():
+    return None
 
 def get_headers():
     return {}

@@ -11,7 +11,7 @@ sites = [
 'https://reaperscans.com/series/',
 'https://readmanganato.com/manga',
 'https://mangakakalot.com/chapter/',
-'https://ww1.mangakakalot.tv/chapter/manga',
+'https://ww3.mangakakalot.tv/chapter/manga',
 ]
 
 def checkUrl(url):
@@ -23,6 +23,7 @@ def checkUrl(url):
 def handler(data):
     print(data)
     url = data['url']
+    chapter = data['chapter']
     result = [[url,template] for template in sites if url.startswith(template)]
     path,website = result[0]
 
@@ -38,13 +39,14 @@ def handler(data):
         cmd = 'python manganato.py '
     elif website == "https://mangakakalot.com/chapter/":
         cmd = 'python mangakakalot.py '
-    elif website == "https://ww1.mangakakalot.tv/chapter/manga":
+    elif website == "https://ww3.mangakakalot.tv/chapter/manga":
         cmd = 'python mangakakalot_tv.py '
     else:
         print("Error trying to read the website...")
         sys.exit()
 
     cmd += path
+    cmd += f" {chapter}"
     subprocess.call(cmd, shell=True)
 
     return 'OK' if len(result) == 1 else 'Error'

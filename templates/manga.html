@@ -75,7 +75,11 @@
       {% endif %}
     }
     else if(code == 39){
-      nextChapter();
+      {% if current_chapter != next_chapter %}
+        nextChapter();
+      {% else %}
+        alert("That was the last chapter");
+      {% endif %}
     }
   }
 

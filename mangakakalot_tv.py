@@ -26,6 +26,7 @@ def clean(list):
 
 def main():
     path = sys.argv[1]
+    chapter_start = int(sys.argv[2])
     url_base = '-'.join(path.split('-')[:2])
     r = requests.get(path)
     soup = BeautifulSoup(r.text,'html.parser')
@@ -37,7 +38,7 @@ def main():
     result = get_chapter_list(soup)[::-1]
     print('Found {} chapters !\n'.format(len(result)))
     #print('Found {} chapters !\nThe first is chapter number {}'.format(len(result),result[0].attrs['data-redirect'].split('/')[-1]))
-    for chapter in result:
+    for chapter in result[chapter_start:]:
         t0 = time.time()
         nBroken = 0
         url = url_base+'-'+chapter

@@ -3,6 +3,7 @@ import os
 from bs4 import BeautifulSoup
 import sys
 import time
+import re
 
 def get_page(text):
     return text.split('-')[1]
@@ -16,6 +17,8 @@ def get_pages(soup):
         if item.name == 'img':
             url = item.attrs["src"].strip()
             page_number = url.split('/')[-1].rstrip('.jpg')
+            if re.search("-[a-z]", page_number):
+                page_number = "".join(re.split("-[a-z]", page_number))
             pages.append([page_number,url])
     return pages
 
